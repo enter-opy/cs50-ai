@@ -190,7 +190,9 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        # mark the cell as a move that has been made
         self.moves_made.add(cell)
+        # mark the cell as safe
         self.mark_safe(cell)
 
         board = set()
@@ -202,9 +204,11 @@ class MinesweeperAI():
         neighbors = neighbors.intersection(board)    
         neighbors = neighbors.difference(self.moves_made)
 
+        # add a new sentence to the AI's knowledge base based on the value of `cell` and `count`
         self.knowledge.append(Sentence(neighbors, count))
 
         while True:
+            # mark any additional cells as safe or as mines if it can be concluded based on the AI's knowledge base
             knowledgecopy0 = deepcopy(self.knowledge)
             for sentence in knowledgecopy0:
                 known_safes = sentence.known_safes()
@@ -223,7 +227,8 @@ class MinesweeperAI():
                 self.mark_mine(mine)
 
             knowledgecopy1 = deepcopy(self.knowledge)
-
+            
+            # add any new sentences to the AI's knowledge base if they can be inferred from existing knowledge
             for sentence1 in knowledgecopy1:
                 for sentence2 in knowledgecopy1:
                     new_sentence = Sentence(sentence2.cells.difference(sentence1.cells), sentence2.count - sentence1.count)
